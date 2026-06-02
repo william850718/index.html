@@ -232,7 +232,7 @@
         .b-requal { background: rgba(167,139,250,0.2); color: #c4b5fd; }
         .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 1rem; flex-wrap: wrap; }
         .detail-title { font-size: 20px; font-weight: 700; }
-        .fw-timeline { font-size: 15px; color: #60a5fa; margin-top: 6px; font-family: monospace; }
+        .fw-timeline { font-size: 13px; color: #60a5fa; margin-top: 4px; font-family: monospace; }
         .proj-tb-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; width: 100%; }
         #proj-toolbar { flex-direction: column; align-items: stretch; }
         #proj-toolbar > .proj-tb-row { margin: 0; }
@@ -1656,6 +1656,14 @@ function backToProjectList(){
   setProjToolbar('list');
   renderProjectListContent();
 }
+// 攔截瀏覽器返回手勢（Android 右滑 / 返回鍵）
+window.addEventListener('popstate',function(e){
+  if(curProjectId){
+    backToProjectList();
+    // 再推一個假紀錄，防止連續返回直接關閉
+    history.pushState({aclab:'list'},'','  ');
+  }
+});
 function renderProjectList(){
   curProjectId=null;
   setProjToolbar('list');
@@ -1707,6 +1715,8 @@ function renderProjectListContent(){
 function openProject(id){
   curProjectId=id;
   document.getElementById('proj-form-area').innerHTML='';
+  // 推假歷史，讓 Android/iOS 的返回手勢觸發 popstate 而非關閉頁面
+  history.pushState({aclab:'project',id:id},'',' ');
   renderProjectDetail();
 }
 
@@ -1758,7 +1768,7 @@ function renderProjectDetail(){
           Created ${esc(p.created)}
         </div>
         ${fwHistory?`<div class="fw-timeline"><i class="ti ti-history" aria-hidden="true"></i> FW History: ${esc(fwHistory)}</div>`:''}
-        ${p.notes?`<div class="desc" style="margin-top:10px">${esc(p.notes)}</div>`:''}
+        ${p.notes?`<div class="desc" style="margin-top:6px;font-size:13px;color:var(--text-secondary)">${esc(p.notes)}</div>`:''}
       </div>
     </div>
     <div class="sec-div"><hr><span>Test Logs (Newest → Oldest)</span><hr></div>
